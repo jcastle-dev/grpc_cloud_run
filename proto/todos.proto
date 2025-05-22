@@ -1,0 +1,43 @@
+syntax = 'proto3';
+option go_package = "video3/proto";
+package main;
+
+service Todos {
+    rpc CreateOne(CreateOneRequest) returns (Todo);
+    rpc GetOne(GetOneRequest) returns (Todo);
+    rpc GetMany(GetManyRequest) returns (ManyTodosResponse);
+    rpc UpdateOne(UpdateOneRequest) returns (Todo);
+    rpc DeleteOne(GetOneRequest) returns (DeleteOneResponse);
+}
+
+message Todo {
+  int32 id = 1;
+  string title = 2;
+  bool completed = 3;
+}
+
+message CreateOneRequest {
+  string title = 1;
+}
+
+message GetOneRequest {
+  int32 id = 1;
+}
+
+message GetManyRequest {}
+
+message ManyTodosResponse {
+  repeated Todo todos = 1;
+}
+
+message UpdateOneRequest {
+  int32 id = 1;
+  string title = 2;
+  bool completed = 3;
+}
+
+message DeleteOneResponse {
+  string message = 1;
+}
+
+
