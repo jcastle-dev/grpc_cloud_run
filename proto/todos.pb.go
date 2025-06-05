@@ -81,27 +81,27 @@ func (x *Todo) GetCompleted() bool {
 	return false
 }
 
-type CreateOneRequest struct {
+type GetManyResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Title         string                 `protobuf:"bytes,1,opt,name=title,proto3" json:"title,omitempty"`
+	Todos         []*Todo                `protobuf:"bytes,1,rep,name=todos,proto3" json:"todos,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *CreateOneRequest) Reset() {
-	*x = CreateOneRequest{}
+func (x *GetManyResponse) Reset() {
+	*x = GetManyResponse{}
 	mi := &file_proto_todos_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *CreateOneRequest) String() string {
+func (x *GetManyResponse) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*CreateOneRequest) ProtoMessage() {}
+func (*GetManyResponse) ProtoMessage() {}
 
-func (x *CreateOneRequest) ProtoReflect() protoreflect.Message {
+func (x *GetManyResponse) ProtoReflect() protoreflect.Message {
 	mi := &file_proto_todos_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -113,16 +113,16 @@ func (x *CreateOneRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use CreateOneRequest.ProtoReflect.Descriptor instead.
-func (*CreateOneRequest) Descriptor() ([]byte, []int) {
+// Deprecated: Use GetManyResponse.ProtoReflect.Descriptor instead.
+func (*GetManyResponse) Descriptor() ([]byte, []int) {
 	return file_proto_todos_proto_rawDescGZIP(), []int{1}
 }
 
-func (x *CreateOneRequest) GetTitle() string {
+func (x *GetManyResponse) GetTodos() []*Todo {
 	if x != nil {
-		return x.Title
+		return x.Todos
 	}
-	return ""
+	return nil
 }
 
 type GetOneRequest struct {
@@ -205,27 +205,27 @@ func (*GetManyRequest) Descriptor() ([]byte, []int) {
 	return file_proto_todos_proto_rawDescGZIP(), []int{3}
 }
 
-type ManyTodosResponse struct {
+type CreateOneRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Todos         []*Todo                `protobuf:"bytes,1,rep,name=todos,proto3" json:"todos,omitempty"`
+	Title         string                 `protobuf:"bytes,1,opt,name=title,proto3" json:"title,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *ManyTodosResponse) Reset() {
-	*x = ManyTodosResponse{}
+func (x *CreateOneRequest) Reset() {
+	*x = CreateOneRequest{}
 	mi := &file_proto_todos_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *ManyTodosResponse) String() string {
+func (x *CreateOneRequest) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*ManyTodosResponse) ProtoMessage() {}
+func (*CreateOneRequest) ProtoMessage() {}
 
-func (x *ManyTodosResponse) ProtoReflect() protoreflect.Message {
+func (x *CreateOneRequest) ProtoReflect() protoreflect.Message {
 	mi := &file_proto_todos_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -237,16 +237,16 @@ func (x *ManyTodosResponse) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use ManyTodosResponse.ProtoReflect.Descriptor instead.
-func (*ManyTodosResponse) Descriptor() ([]byte, []int) {
+// Deprecated: Use CreateOneRequest.ProtoReflect.Descriptor instead.
+func (*CreateOneRequest) Descriptor() ([]byte, []int) {
 	return file_proto_todos_proto_rawDescGZIP(), []int{4}
 }
 
-func (x *ManyTodosResponse) GetTodos() []*Todo {
+func (x *CreateOneRequest) GetTitle() string {
 	if x != nil {
-		return x.Todos
+		return x.Title
 	}
-	return nil
+	return ""
 }
 
 type UpdateOneRequest struct {
@@ -361,27 +361,27 @@ const file_proto_todos_proto_rawDesc = "" +
 	"\x04Todo\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\x05R\x02id\x12\x14\n" +
 	"\x05title\x18\x02 \x01(\tR\x05title\x12\x1c\n" +
-	"\tcompleted\x18\x03 \x01(\bR\tcompleted\"(\n" +
-	"\x10CreateOneRequest\x12\x14\n" +
-	"\x05title\x18\x01 \x01(\tR\x05title\"\x1f\n" +
+	"\tcompleted\x18\x03 \x01(\bR\tcompleted\"3\n" +
+	"\x0fGetManyResponse\x12 \n" +
+	"\x05todos\x18\x01 \x03(\v2\n" +
+	".main.TodoR\x05todos\"\x1f\n" +
 	"\rGetOneRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\x05R\x02id\"\x10\n" +
-	"\x0eGetManyRequest\"5\n" +
-	"\x11ManyTodosResponse\x12 \n" +
-	"\x05todos\x18\x01 \x03(\v2\n" +
-	".main.TodoR\x05todos\"V\n" +
+	"\x0eGetManyRequest\"(\n" +
+	"\x10CreateOneRequest\x12\x14\n" +
+	"\x05title\x18\x01 \x01(\tR\x05title\"V\n" +
 	"\x10UpdateOneRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\x05R\x02id\x12\x14\n" +
 	"\x05title\x18\x02 \x01(\tR\x05title\x12\x1c\n" +
 	"\tcompleted\x18\x03 \x01(\bR\tcompleted\"-\n" +
 	"\x11DeleteOneResponse\x12\x18\n" +
-	"\amessage\x18\x01 \x01(\tR\amessage2\x89\x02\n" +
-	"\x05Todos\x12/\n" +
-	"\tCreateOne\x12\x16.main.CreateOneRequest\x1a\n" +
-	".main.Todo\x12)\n" +
+	"\amessage\x18\x01 \x01(\tR\amessage2\x87\x02\n" +
+	"\x05Todos\x12)\n" +
 	"\x06GetOne\x12\x13.main.GetOneRequest\x1a\n" +
-	".main.Todo\x128\n" +
-	"\aGetMany\x12\x14.main.GetManyRequest\x1a\x17.main.ManyTodosResponse\x12/\n" +
+	".main.Todo\x126\n" +
+	"\aGetMany\x12\x14.main.GetManyRequest\x1a\x15.main.GetManyResponse\x12/\n" +
+	"\tCreateOne\x12\x16.main.CreateOneRequest\x1a\n" +
+	".main.Todo\x12/\n" +
 	"\tUpdateOne\x12\x16.main.UpdateOneRequest\x1a\n" +
 	".main.Todo\x129\n" +
 	"\tDeleteOne\x12\x13.main.GetOneRequest\x1a\x17.main.DeleteOneResponseB\x0eZ\fvideo3/protob\x06proto3"
@@ -401,23 +401,23 @@ func file_proto_todos_proto_rawDescGZIP() []byte {
 var file_proto_todos_proto_msgTypes = make([]protoimpl.MessageInfo, 7)
 var file_proto_todos_proto_goTypes = []any{
 	(*Todo)(nil),              // 0: main.Todo
-	(*CreateOneRequest)(nil),  // 1: main.CreateOneRequest
+	(*GetManyResponse)(nil),   // 1: main.GetManyResponse
 	(*GetOneRequest)(nil),     // 2: main.GetOneRequest
 	(*GetManyRequest)(nil),    // 3: main.GetManyRequest
-	(*ManyTodosResponse)(nil), // 4: main.ManyTodosResponse
+	(*CreateOneRequest)(nil),  // 4: main.CreateOneRequest
 	(*UpdateOneRequest)(nil),  // 5: main.UpdateOneRequest
 	(*DeleteOneResponse)(nil), // 6: main.DeleteOneResponse
 }
 var file_proto_todos_proto_depIdxs = []int32{
-	0, // 0: main.ManyTodosResponse.todos:type_name -> main.Todo
-	1, // 1: main.Todos.CreateOne:input_type -> main.CreateOneRequest
-	2, // 2: main.Todos.GetOne:input_type -> main.GetOneRequest
-	3, // 3: main.Todos.GetMany:input_type -> main.GetManyRequest
+	0, // 0: main.GetManyResponse.todos:type_name -> main.Todo
+	2, // 1: main.Todos.GetOne:input_type -> main.GetOneRequest
+	3, // 2: main.Todos.GetMany:input_type -> main.GetManyRequest
+	4, // 3: main.Todos.CreateOne:input_type -> main.CreateOneRequest
 	5, // 4: main.Todos.UpdateOne:input_type -> main.UpdateOneRequest
 	2, // 5: main.Todos.DeleteOne:input_type -> main.GetOneRequest
-	0, // 6: main.Todos.CreateOne:output_type -> main.Todo
-	0, // 7: main.Todos.GetOne:output_type -> main.Todo
-	4, // 8: main.Todos.GetMany:output_type -> main.ManyTodosResponse
+	0, // 6: main.Todos.GetOne:output_type -> main.Todo
+	1, // 7: main.Todos.GetMany:output_type -> main.GetManyResponse
+	0, // 8: main.Todos.CreateOne:output_type -> main.Todo
 	0, // 9: main.Todos.UpdateOne:output_type -> main.Todo
 	6, // 10: main.Todos.DeleteOne:output_type -> main.DeleteOneResponse
 	6, // [6:11] is the sub-list for method output_type

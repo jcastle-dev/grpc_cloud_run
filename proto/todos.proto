@@ -3,11 +3,11 @@ option go_package = "video3/proto";
 package main;
 
 service Todos {
-    rpc CreateOne(CreateOneRequest) returns (Todo);
-    rpc GetOne(GetOneRequest) returns (Todo);
-    rpc GetMany(GetManyRequest) returns (ManyTodosResponse);
-    rpc UpdateOne(UpdateOneRequest) returns (Todo);
-    rpc DeleteOne(GetOneRequest) returns (DeleteOneResponse);
+  rpc GetOne(GetOneRequest) returns (Todo);
+  rpc GetMany(GetManyRequest) returns (GetManyResponse);
+  rpc CreateOne(CreateOneRequest) returns (Todo);
+  rpc UpdateOne(UpdateOneRequest) returns (Todo);
+  rpc DeleteOne(GetOneRequest) returns (DeleteOneResponse);
 }
 
 message Todo {
@@ -16,8 +16,8 @@ message Todo {
   bool completed = 3;
 }
 
-message CreateOneRequest {
-  string title = 1;
+message GetManyResponse {
+  repeated Todo todos = 1;
 }
 
 message GetOneRequest {
@@ -26,8 +26,8 @@ message GetOneRequest {
 
 message GetManyRequest {}
 
-message ManyTodosResponse {
-  repeated Todo todos = 1;
+message CreateOneRequest {
+  string title = 1;
 }
 
 message UpdateOneRequest {

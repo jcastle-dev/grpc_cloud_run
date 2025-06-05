@@ -14,11 +14,13 @@ import (
 
 	"github.com/joho/godotenv"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/reflection"
+	"google.golang.org/grpc/status"
 )
 
 var (
-	port = flag.Int("port", 50051, "The server port")
+	port = flag.Int("port", 5000, "The server port")
 )
 
 type Todo struct {
@@ -29,40 +31,41 @@ type Todo struct {
 
 var todos []Todo
 
-type server struct {
+type Server struct {
 	pb.UnimplementedTodosServer
 }
 
-func (s *server) GetMany(_ context.Context, in *pb.GetManyRequest) (*pb.ManyTodosResponse, error) {
+func (server *Server) GetMany(_ context.Context, in *pb.GetManyRequest) (*pb.GetManyResponse, error) {
 	log.Printf("Received: %v", in)
 	var todosResponse []*pb.Todo
-	for _, t := range todos {
+	for _, todo := range todos {
 		todosResponse = append(todosResponse, &pb.Todo{
-			Id:        t.Id,
-			Title:     t.Title,
-			Completed: t.Completed,
+			Id:        todo.Id,
+			Title:     todo.Title,
+			Completed: todo.Completed,
 		})
 	}
-	return &pb.ManyTodosResponse{
+	return &pb.GetManyResponse{
 		Todos: todosResponse,
 	}, nil
 }
 
-func (s *server) GetOne(_ context.Context, in *pb.GetOneRequest) (*pb.Todo, error) {
+func (server *Server) GetOne(_ context.Context, in *pb.GetOneRequest) (*pb.Todo, error) {
 	log.Printf("Received: %v", in)
-	for _, t := range todos {
-		if t.Id == in.Id {
+	for _, todo := range todos {
+		if todo.Id == in.Id {
 			return &pb.Todo{
-				Id:        t.Id,
-				Title:     t.Title,
-				Completed: t.Completed,
+				Id:        todo.Id,
+				Title:     todo.Title,
+				Completed: todo.Completed,
 			}, nil
 		}
 	}
-	return nil, fmt.Errorf("todo with id %d not found", in.Id)
+	error := fmt.Errorf("todo with id %d not found", in.Id)
+	return nil, status.Errorf(codes.NotFound, error.Error())
 }
 
-func (s *server) CreateOne(_ context.Context, in *pb.CreateOneRequest) (*pb.Todo, error) {
+func (server *Server) CreateOne(_ context.Context, in *pb.CreateOneRequest) (*pb.Todo, error) {
 	log.Printf("Received: %v", in)
 	var newID int32 = 1
 	if len(todos) > 0 {
@@ -81,33 +84,35 @@ func (s *server) CreateOne(_ context.Context, in *pb.CreateOneRequest) (*pb.Todo
 	}, nil
 }
 
-func (s *server) UpdateOne(_ context.Context, in *pb.UpdateOneRequest) (*pb.Todo, error) {
+func (server *Server) UpdateOne(_ context.Context, in *pb.UpdateOneRequest) (*pb.Todo, error) {
 	log.Printf("Received: %v", in)
-	for i, t := range todos {
-		if t.Id == in.Id {
-			todos[i].Title = in.Title
-			todos[i].Completed = in.Completed
+	for index, todo := range todos {
+		if todo.Id == in.Id {
+			todos[index].Title = in.Title
+			todos[index].Completed = in.Completed
 			return &pb.Todo{
-				Id:        todos[i].Id,
-				Title:     todos[i].Title,
-				Completed: todos[i].Completed,
+				Id:        todos[index].Id,
+				Title:     todos[index].Title,
+				Completed: todos[index].Completed,
 			}, nil
 		}
 	}
-	return nil, fmt.Errorf("todo with id %d not found", in.Id)
+	error := fmt.Errorf("todo with id %d not found", in.Id)
+	return nil, status.Errorf(codes.NotFound, error.Error())
 }
 
-func (s *server) DeleteOne(_ context.Context, in *pb.GetOneRequest) (*pb.DeleteOneResponse, error) {
+func (server *Server) DeleteOne(_ context.Context, in *pb.GetOneRequest) (*pb.DeleteOneResponse, error) {
 	log.Printf("Received: %v", in)
-	for i, t := range todos {
-		if t.Id == in.Id {
-			todos = slices.Delete(todos, i, i+1)
+	for index, todo := range todos {
+		if todo.Id == in.Id {
+			todos = slices.Delete(todos, index, index+1)
 			return &pb.DeleteOneResponse{
 				Message: fmt.Sprintf("todo with id %d deleted", in.Id),
 			}, nil
 		}
 	}
-	return nil, fmt.Errorf("todo with id %d not found", in.Id)
+	error := fmt.Errorf("todo with id %d not found", in.Id)
+	return nil, status.Errorf(codes.NotFound, error.Error())
 }
 
 func main() {
@@ -128,15 +133,15 @@ func main() {
 	}
 
 	flag.Parse()
-	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", *port))
+	listener, err := net.Listen("tcp", fmt.Sprintf(":%d", *port))
 	if err != nil {
-		log.Fatalf("failed to listen: %v", err)
+		log.Fatalf("failed to start listener: %v", err)
 	}
-	s := grpc.NewServer()
-	reflection.Register(s)
-	pb.RegisterTodosServer(s, &server{})
-	log.Printf("server listening at %v", lis.Addr())
-	if err := s.Serve(lis); err != nil {
-		log.Fatalf("failed to serve: %v", err)
+	server := grpc.NewServer()
+	reflection.Register(server)
+	pb.RegisterTodosServer(server, &Server{})
+	log.Printf("server listening at %v", listener.Addr())
+	if err := server.Serve(listener); err != nil {
+		log.Fatalf("server failure: %v", err)
 	}
 }

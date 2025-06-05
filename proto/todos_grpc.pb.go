@@ -19,9 +19,9 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	Todos_CreateOne_FullMethodName = "/main.Todos/CreateOne"
 	Todos_GetOne_FullMethodName    = "/main.Todos/GetOne"
 	Todos_GetMany_FullMethodName   = "/main.Todos/GetMany"
+	Todos_CreateOne_FullMethodName = "/main.Todos/CreateOne"
 	Todos_UpdateOne_FullMethodName = "/main.Todos/UpdateOne"
 	Todos_DeleteOne_FullMethodName = "/main.Todos/DeleteOne"
 )
@@ -30,9 +30,9 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type TodosClient interface {
-	CreateOne(ctx context.Context, in *CreateOneRequest, opts ...grpc.CallOption) (*Todo, error)
 	GetOne(ctx context.Context, in *GetOneRequest, opts ...grpc.CallOption) (*Todo, error)
-	GetMany(ctx context.Context, in *GetManyRequest, opts ...grpc.CallOption) (*ManyTodosResponse, error)
+	GetMany(ctx context.Context, in *GetManyRequest, opts ...grpc.CallOption) (*GetManyResponse, error)
+	CreateOne(ctx context.Context, in *CreateOneRequest, opts ...grpc.CallOption) (*Todo, error)
 	UpdateOne(ctx context.Context, in *UpdateOneRequest, opts ...grpc.CallOption) (*Todo, error)
 	DeleteOne(ctx context.Context, in *GetOneRequest, opts ...grpc.CallOption) (*DeleteOneResponse, error)
 }
@@ -45,16 +45,6 @@ func NewTodosClient(cc grpc.ClientConnInterface) TodosClient {
 	return &todosClient{cc}
 }
 
-func (c *todosClient) CreateOne(ctx context.Context, in *CreateOneRequest, opts ...grpc.CallOption) (*Todo, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(Todo)
-	err := c.cc.Invoke(ctx, Todos_CreateOne_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 func (c *todosClient) GetOne(ctx context.Context, in *GetOneRequest, opts ...grpc.CallOption) (*Todo, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(Todo)
@@ -65,10 +55,20 @@ func (c *todosClient) GetOne(ctx context.Context, in *GetOneRequest, opts ...grp
 	return out, nil
 }
 
-func (c *todosClient) GetMany(ctx context.Context, in *GetManyRequest, opts ...grpc.CallOption) (*ManyTodosResponse, error) {
+func (c *todosClient) GetMany(ctx context.Context, in *GetManyRequest, opts ...grpc.CallOption) (*GetManyResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(ManyTodosResponse)
+	out := new(GetManyResponse)
 	err := c.cc.Invoke(ctx, Todos_GetMany_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *todosClient) CreateOne(ctx context.Context, in *CreateOneRequest, opts ...grpc.CallOption) (*Todo, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Todo)
+	err := c.cc.Invoke(ctx, Todos_CreateOne_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -99,9 +99,9 @@ func (c *todosClient) DeleteOne(ctx context.Context, in *GetOneRequest, opts ...
 // All implementations must embed UnimplementedTodosServer
 // for forward compatibility.
 type TodosServer interface {
-	CreateOne(context.Context, *CreateOneRequest) (*Todo, error)
 	GetOne(context.Context, *GetOneRequest) (*Todo, error)
-	GetMany(context.Context, *GetManyRequest) (*ManyTodosResponse, error)
+	GetMany(context.Context, *GetManyRequest) (*GetManyResponse, error)
+	CreateOne(context.Context, *CreateOneRequest) (*Todo, error)
 	UpdateOne(context.Context, *UpdateOneRequest) (*Todo, error)
 	DeleteOne(context.Context, *GetOneRequest) (*DeleteOneResponse, error)
 	mustEmbedUnimplementedTodosServer()
@@ -114,14 +114,14 @@ type TodosServer interface {
 // pointer dereference when methods are called.
 type UnimplementedTodosServer struct{}
 
-func (UnimplementedTodosServer) CreateOne(context.Context, *CreateOneRequest) (*Todo, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method CreateOne not implemented")
-}
 func (UnimplementedTodosServer) GetOne(context.Context, *GetOneRequest) (*Todo, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetOne not implemented")
 }
-func (UnimplementedTodosServer) GetMany(context.Context, *GetManyRequest) (*ManyTodosResponse, error) {
+func (UnimplementedTodosServer) GetMany(context.Context, *GetManyRequest) (*GetManyResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetMany not implemented")
+}
+func (UnimplementedTodosServer) CreateOne(context.Context, *CreateOneRequest) (*Todo, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateOne not implemented")
 }
 func (UnimplementedTodosServer) UpdateOne(context.Context, *UpdateOneRequest) (*Todo, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateOne not implemented")
@@ -148,24 +148,6 @@ func RegisterTodosServer(s grpc.ServiceRegistrar, srv TodosServer) {
 		t.testEmbeddedByValue()
 	}
 	s.RegisterService(&Todos_ServiceDesc, srv)
-}
-
-func _Todos_CreateOne_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(CreateOneRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(TodosServer).CreateOne(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: Todos_CreateOne_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(TodosServer).CreateOne(ctx, req.(*CreateOneRequest))
-	}
-	return interceptor(ctx, in, info, handler)
 }
 
 func _Todos_GetOne_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
@@ -200,6 +182,24 @@ func _Todos_GetMany_Handler(srv interface{}, ctx context.Context, dec func(inter
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(TodosServer).GetMany(ctx, req.(*GetManyRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Todos_CreateOne_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateOneRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(TodosServer).CreateOne(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Todos_CreateOne_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TodosServer).CreateOne(ctx, req.(*CreateOneRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -248,16 +248,16 @@ var Todos_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*TodosServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "CreateOne",
-			Handler:    _Todos_CreateOne_Handler,
-		},
-		{
 			MethodName: "GetOne",
 			Handler:    _Todos_GetOne_Handler,
 		},
 		{
 			MethodName: "GetMany",
 			Handler:    _Todos_GetMany_Handler,
+		},
+		{
+			MethodName: "CreateOne",
+			Handler:    _Todos_CreateOne_Handler,
 		},
 		{
 			MethodName: "UpdateOne",

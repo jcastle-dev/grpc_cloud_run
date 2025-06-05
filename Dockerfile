@@ -9,5 +9,5 @@ FROM alpine:latest
 WORKDIR /app
 COPY --from=build /app/server app/data.json ./
 ENV DATA_JSON_URI=/app/data.json
-EXPOSE 50051
+EXPOSE 5000
 CMD ["/app/server"]
